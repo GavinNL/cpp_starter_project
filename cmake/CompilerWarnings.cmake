@@ -30,7 +30,7 @@ function(set_project_warnings project_name)
       /w14549 # 'operator': operator before comma has no effect; did you intend
               # 'operator'?
       /w14555 # expression has no effect; expected expression with side- effect
-      /w14619 # pragma warning: there is no warning number 'number'
+#      /w14619 # pragma warning: there is no warning number 'number'
       /w14640 # Enable warning on thread un-safe static member initialization
       /w14826 # Conversion from 'type1' to 'type_2' is sign-extended. This may
               # cause unexpected runtime behavior.
@@ -39,7 +39,6 @@ function(set_project_warnings project_name)
       /w14928 # illegal copy-initialization; more than one user-defined
               # conversion has been implicitly applied
 
-      /wd4619 # Disable "there is no warning "
   )
 
   set(CLANG_WARNINGS
