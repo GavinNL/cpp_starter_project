@@ -83,13 +83,13 @@ build-gcc8:
 #    extends: .build-clang
 #    image: conanio/clang39
 
-$build-clang40:
-$    extends: .build-clang
-$    image: conanio/clang40
+#build-clang40:
+#    extends: .build-clang
+#    image: conanio/clang40
 
-$build-clang50:
-$    extends: .build-clang
-$    image: conanio/clang50
+#build-clang50:
+#    extends: .build-clang
+#    image: conanio/clang50
 
 build-clang60:
     extends: .build-clang
