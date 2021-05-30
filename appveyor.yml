@@ -16,7 +16,7 @@ environment:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       platform: x64
       FLAGS: "/permissive- /std:c++latest /utf-8"
-      GENERATOR: Visual Studio 16 2019 Win64
+      GENERATOR: Visual Studio 16 2019
 
 clone_folder: c:\projects\source
 
