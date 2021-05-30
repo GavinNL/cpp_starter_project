@@ -53,21 +53,29 @@ stages:
 #    extends: .build-gcc
 #    image: conanio/gcc6
 
-build-gcc7:
+build-bionic-gcc7:
     extends: .build-ubuntu-lts
     image: conanio/gcc7
     variables:
         CC: '/usr/bin/gcc-7'
         CXX: '/usr/bin/g++-7'
 
-build-gcc8:
+build-focal-gcc8:
     extends: .build-ubuntu-lts
     image: conanio/gcc8
     variables:
         CC: '/usr/bin/gcc-8'
         CXX: '/usr/bin/g++-8'
 
-build-clang10:
+build-focal-gcc9:
+    extends: .build-ubuntu-lts
+    image: conanio/gcc8
+    variables:
+        CC: '/usr/bin/gcc-9'
+        CXX: '/usr/bin/g++-9'
+        ADDITIONAL_PACKAGES: 'gcc-9 g++-9'
+
+build-focal-clang10:
     extends: .build-ubuntu-lts
     image: conanio/gcc10
     variables:
@@ -75,37 +83,3 @@ build-clang10:
         CC: '/usr/bin/clang-10'
         CXX: '/usr/bin/clang++-10'
 
-.build-clang:
-    image: conanio/clang60
-    stage: test
-    before_script:
-      - sudo apt update
-      #- sudo apt install -y --no-install-recommends gcovr
-      - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-    script:
-      - mkdir -p build && cd build
-      #- conan install --build missing ..
-      - if [ -f ../conanfile.txt ]; then conan install .. --build missing -s compiler.libcxx=libstdc++11; fi
-      - cmake ..
-      - cmake --build .
-      - ctest
-
-#build-clang38:
-#    extends: .build-clang
-#    image: conanio/clang38
-
-#build-clang39:
-#    extends: .build-clang
-#    image: conanio/clang39
-
-#build-clang40:
-#    extends: .build-clang
-#    image: conanio/clang40
-
-#build-clang50:
-#    extends: .build-clang
-#    image: conanio/clang50
-
-#build-clang60:
-#    extends: .build-clang
-#    image: conanio/clang60
