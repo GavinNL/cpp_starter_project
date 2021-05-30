@@ -38,6 +38,8 @@ function(set_project_warnings project_name)
       /w14906 # string literal cast to 'LPWSTR'
       /w14928 # illegal copy-initialization; more than one user-defined
               # conversion has been implicitly applied
+
+      /wd4619 # Disable "there is no warning "
   )
 
   set(CLANG_WARNINGS
@@ -65,7 +67,7 @@ function(set_project_warnings project_name)
 
   if (${PROJECT_NAME}_WARNINGS_AS_ERRORS)
       set(CLANG_WARNINGS ${CLANG_WARNINGS} -Werror)
-      set(MSVC_WARNINGS ${MSVC_WARNINGS} /WX)
+      set(MSVC_WARNINGS ${MSVC_WARNINGS} /WX )
   endif()
 
   set(GCC_WARNINGS
