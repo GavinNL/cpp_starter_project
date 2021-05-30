@@ -6,6 +6,7 @@ project(gul  VERSION 1.0.0)
 
 
 #########################################################
+include(cmake/StandardProjectSettings.cmake)
 include(cmake/CompilerWarnings.cmake)
 include(cmake/Coverage.cmake)
 #########################################################

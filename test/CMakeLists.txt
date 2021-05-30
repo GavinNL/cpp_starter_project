@@ -9,6 +9,20 @@ cmake_minimum_required(VERSION 3.13)
 if( EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake )
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     conan_basic_setup(NO_OUTPUT_DIRS TARGETS)
+else()
+
+    message("")
+    message("")
+    message("*************WARNING******************************")
+    message("Could Not find ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake.")
+    message("Cannot build unit tests. ")
+    message("Execute the following to build the unit tests")
+    message("  cd ${CMAKE_BINARY_DIR}")
+    message("  conan install ${CMAKE_SOURCE_DIR}")
+    message("**************************************************")
+    message("")
+    message("")
+    return()
 endif()
 ################################################################################
 
@@ -17,7 +31,7 @@ add_library(${PROJECT_NAME}-catchmain STATIC ${CMAKE_CURRENT_SOURCE_DIR}/catch-m
 target_include_directories(${PROJECT_NAME}-catchmain PUBLIC third_party)
 target_compile_features(${PROJECT_NAME}-catchmain PUBLIC cxx_std_17)
 target_link_libraries( ${PROJECT_NAME}-catchmain PUBLIC   CONAN_PKG::catch2)
-
+set_coverage_flags(${PROJECT_NAME}-catchmain)
 
 get_filename_component(folder_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 string(REPLACE " " "_" folder_name ${folder_name})
@@ -25,39 +39,54 @@ string(REPLACE " " "_" folder_name ${folder_name})
 
 enable_testing()
 
-message("*****************************************************")
-message("UNIT TESTS:")
-message("*****************************************************")
-# Find all files named unit-*.cpp
+
 file(GLOB files "unit-*.cpp")
 foreach(file ${files})
 
+    # Replace any files named test_XXXXX with XXXX
     get_filename_component(file_basename ${file} NAME_WE)
-    string(REGEX REPLACE "unit-([^$]+)" "${TESTCASE_PREFIX}-\\1" testcase ${file_basename})
+    string(REGEX REPLACE "unit-([^$]+)" "\\1" testcase ${file_basename})
 
-    string(REGEX REPLACE "unit-([^$]+)" "unit-\\1" exe_name ${file_basename})
+    set(FILE_SUFFIX_NAME  ${testcase} )
+    set(EXE_NAME     unit-${FILE_SUFFIX_NAME} )
+    set(TEST_NAME    test-${FILE_SUFFIX_NAME} )
+    set(SRC_NAME     unit-${FILE_SUFFIX_NAME}.cpp )
 
-    message("New File: ${file} Test case: ${testcase} Exe name: ${exe_name}")
+    set(exeCmd  ${EXE_NAME} )
+    set(envVar  "" )
 
 
-    set(UNIT_EXE_NAME  ${PROJECT_NAME}-${exe_name} )
-    set(UNIT_TEST_NAME ${TESTCASE_PREFIX}-${exe_name} )
+    add_executable( ${EXE_NAME}  ${SRC_NAME} )
 
-    add_executable( ${UNIT_EXE_NAME} ${file} )
-    target_compile_definitions( ${UNIT_EXE_NAME} PRIVATE CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
-    target_compile_features( ${UNIT_EXE_NAME}
+    target_link_libraries( ${EXE_NAME}
                                 PUBLIC
-                                    cxx_std_17)
+                                    ${UNIT_TEST_LINK_TARGETS}
+                                    ${LINKED_TARGETS})
 
-    target_link_libraries( ${UNIT_EXE_NAME} 
-                                PUBLIC 
-                                    ${PROJECT_NAME}-catchmain  
-                                )
+    target_link_libraries( ${EXE_NAME}
+                                PRIVATE
+                                    ${PROJECT_NAME}-catchmain
+                                    ${PROJECT_NAME})
+
+    add_test(  NAME    ${TEST_NAME}
+               COMMAND ${exeCmd}
+            )
+    set_tests_properties(${TEST_NAME}
+                            PROPERTIES
+                                ENVIRONMENT
+                                    "${envVar}")
 
 
-    add_test( NAME ${UNIT_TEST_NAME}
-              COMMAND ${UNIT_EXE_NAME}
-    )
 
-    message("  ${UNIT_EXE_NAME} ")
+    message("--------------------------------------------------")
+    message("Unit Test Added: ${TEST_NAME}")
+    message("--------------------------------------------------")
+    message("Souce File       : ${SRC_NAME}")
+    message("Working Directory: ${CMAKE_CURRENT_BINARY_DIR}")
+    message("Env Variables    : ${envVar}")
+    message("Command          : ${exeCmd}")
+    #set_coverage_flags(${EXE_NAME})
+    #set_project_warnings(${EXE_NAME})
 endforeach()
+
+return()

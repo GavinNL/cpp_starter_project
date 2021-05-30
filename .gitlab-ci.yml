@@ -31,8 +31,8 @@ cppcheck:
       - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
     script:
       - mkdir -p build && cd build
-      - if [ -f ../conanfile.txt ]; then conan install --build missing ..; fi
-      - cmake -D GNL_ENABLE_COVERAGE:BOOL=TRUE -D GNL_BUILD_TESTS:BOOL=TRUE ..
+      - if [ -f ../conanfile.txt ]; then conan install .. --build missing -s compiler.libcxx=libstdc++11 ; fi
+      - cmake ..
       - cmake --build .
       - ctest
       - make coverage
@@ -70,7 +70,7 @@ build-gcc8:
     script:
       - mkdir -p build && cd build
       #- conan install --build missing ..
-      - if [ -f ../conanfile.txt ]; then conan install --build missing ..; fi
+      - if [ -f ../conanfile.txt ]; then conan install .. --build missing -s compiler.libcxx=libstdc++11; fi
       - cmake -D GNL_ENABLE_COVERAGE:BOOL=TRUE -D GNL_BUILD_TESTS:BOOL=TRUE ..
       - cmake --build .
       - ctest

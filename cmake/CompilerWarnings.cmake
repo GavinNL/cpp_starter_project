@@ -84,13 +84,21 @@ function(set_project_warnings project_name)
   )
 
   if(MSVC)
-    set(${PROJECT_NAME}_PROJECT_WARNINGS ${MSVC_WARNINGS})
+    set(_PROJECT_WARNINGS ${MSVC_WARNINGS})
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(${PROJECT_NAME}_PROJECT_WARNINGS ${CLANG_WARNINGS})
+    set(_PROJECT_WARNINGS ${CLANG_WARNINGS})
   else()
-    set(${PROJECT_NAME}_PROJECT_WARNINGS ${GCC_WARNINGS})
+    set(_PROJECT_WARNINGS ${GCC_WARNINGS})
   endif()
 
-  target_compile_options(${project_name} INTERFACE ${PROJECT_NAME}_PROJECT_WARNINGS)
+  get_target_property(type ${project_name} TYPE)
+  message("--->${type}")
+  if (${type} STREQUAL "INTERFACE_LIBRARY")
+      target_compile_options(${project_name} INTERFACE ${_PROJECT_WARNINGS})
+  else()
+      target_compile_options(${project_name} PRIVATE ${_PROJECT_WARNINGS})
+  endif()
+
+
 
 endfunction()
