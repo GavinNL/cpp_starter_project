@@ -13,6 +13,10 @@ environment:
       FLAGS: "/permissive- /std:c++latest /utf-8"
       GENERATOR: Visual Studio 15 2017 Win64
 
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      platform: x64
+      FLAGS: "/permissive- /std:c++latest /utf-8"
+      GENERATOR: Visual Studio 16 2019 Win64
 
 clone_folder: c:\projects\source
 
@@ -37,7 +41,7 @@ build_script:
 test_script:
 - cmd: >-
     set CTEST_OUTPUT_ON_FAILURE=1
-    ctest -C Release
+    ctest --output-on-failure -C Release
 
 
 

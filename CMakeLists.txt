@@ -55,7 +55,7 @@ add_custom_target( other_files
                           # LICENSE
                            .gitlab-ci.yml
                           # .travis.yml
-                           #appveyor.yml
+                           appveyor.yml
                            cmake/CompilerWarnings.cmake
                            cmake/Coverage.cmake
                 )
