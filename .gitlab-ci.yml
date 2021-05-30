@@ -28,14 +28,6 @@ stages:
       expire_in: 1 week
 
 
-#build-gcc5:
-#    extends: .build-gcc
-#    image: conanio/gcc5
-
-#build-gcc6:
-#    extends: .build-gcc
-#    image: conanio/gcc6
-
 build-bionic-gcc7:
     extends: .build-ubuntu-lts
     image: conanio/gcc7
