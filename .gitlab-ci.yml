@@ -20,7 +20,7 @@ stages:
 
       - cmake .. ${ADDITIONAL_CMAKE_FLAGS}
       - cmake --build .
-      - ctest
+      - ctest --output-on-failure
       - make coverage
     artifacts:
       paths:
@@ -64,6 +64,16 @@ build-focal-gcc9:
         ADDITIONAL_CMAKE_FLAGS: ''
         ADDITIONAL_CONAN_FLAGS: '-s compiler.libcxx=libstdc++11'
 
+build-focal-clang9:
+    extends: .build-ubuntu-lts
+    image: conanio/gcc10
+    variables:
+        CC: '/usr/bin/clang-9'
+        CXX: '/usr/bin/clang++-9'
+        ADDITIONAL_PACKAGES: 'clang-9'
+        ADDITIONAL_CMAKE_FLAGS: ''
+        ADDITIONAL_CONAN_FLAGS: '-s compiler.libcxx=libstdc++11'
+
 build-focal-clang10:
     extends: .build-ubuntu-lts
     image: conanio/gcc10
@@ -74,3 +84,12 @@ build-focal-clang10:
         ADDITIONAL_CMAKE_FLAGS: ''
         ADDITIONAL_CONAN_FLAGS: '-s compiler.libcxx=libstdc++11'
 
+build-focal-clang11:
+    extends: .build-ubuntu-lts
+    image: conanio/gcc10
+    variables:
+        CC: '/usr/bin/clang-11'
+        CXX: '/usr/bin/clang++-11'
+        ADDITIONAL_PACKAGES: 'clang-11'
+        ADDITIONAL_CMAKE_FLAGS: ''
+        ADDITIONAL_CONAN_FLAGS: '-s compiler.libcxx=libstdc++11'
