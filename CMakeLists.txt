@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 #########################################################
-project(gul  VERSION 1.0.0)
+project(ABC  VERSION 1.0.0)
 #########################################################
 
 
@@ -17,13 +17,13 @@ include(cmake/Coverage.cmake)
 # The proper configurations.
 #
 # Any target that wants to use gnl should link to
-# gnl::gnl.  eg:
+# ABC::ABC.  eg:
 #
-#  target_link_libraries(myexe gnl::gnl)
+#  target_link_libraries(myexe ABC::ABC)
 #
 #########################################################
-set(lib_name   gul)
-set(lib_alias  gul::gul)
+set(lib_name   ${PROJECT_NAME})
+set(lib_alias  ${PROJECT_NAME}::${PROJECT_NAME})
 
 add_library( ${lib_name} INTERFACE)
 add_library( ${lib_alias} ALIAS ${lib_name} )
