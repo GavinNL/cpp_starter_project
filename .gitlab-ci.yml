@@ -20,18 +20,21 @@ stages:
       - cppcheck/
     expire_in: 1 week
 
-.build-gcc:
-    image: conanio/conangcc7
+.build-ubuntu-lts:
+    image: conanio/conangcc8
     stage: test
     before_script:
       - sudo apt update
-      - sudo apt install python3 python3-pip -y
+      - sudo apt install python3 python3-pip -y ${ADDITIONAL_PACKAGES}
       - pip3 install --user gcovr
       - export PATH=$HOME/.local/bin:$PATH
       - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+
     script:
       - mkdir -p build && cd build
-      - if [ -f ../conanfile.txt ]; then conan install .. --build missing -s compiler.libcxx=libstdc++11 ; fi
+      - if [ -f ../conanfile.txt ]; then conan profile new autodetect --detect --force ; fi
+      - if [ -f ../conanfile.txt ]; then conan install -pr autodetect .. --build missing -s compiler.libcxx=libstdc++11 ; fi
+
       - cmake ..
       - cmake --build .
       - ctest
@@ -40,7 +43,6 @@ stages:
       paths:
         - build/coverage/
       expire_in: 1 week
-
 
 
 #build-gcc5:
@@ -52,13 +54,26 @@ stages:
 #    image: conanio/gcc6
 
 build-gcc7:
-    extends: .build-gcc
+    extends: .build-ubuntu-lts
     image: conanio/gcc7
+    variables:
+        CC: '/usr/bin/gcc-7'
+        CXX: '/usr/bin/g++-7'
 
 build-gcc8:
-    extends: .build-gcc
+    extends: .build-ubuntu-lts
     image: conanio/gcc8
+    variables:
+        CC: '/usr/bin/gcc-8'
+        CXX: '/usr/bin/g++-8'
 
+build-clang10:
+    extends: .build-ubuntu-lts
+    image: conanio/gcc10
+    variables:
+        ADDITIONAL_PACKAGES: 'clang-10'
+        CC: '/usr/bin/clang-10'
+        CXX: '/usr/bin/clang++-10'
 
 .build-clang:
     image: conanio/clang60
@@ -91,6 +106,6 @@ build-gcc8:
 #    extends: .build-clang
 #    image: conanio/clang50
 
-build-clang60:
-    extends: .build-clang
-    image: conanio/clang60
+#build-clang60:
+#    extends: .build-clang
+#    image: conanio/clang60
