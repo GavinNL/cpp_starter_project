@@ -1,0 +1,182 @@
+language: cpp
+
+
+
+matrix:
+  include:
+
+#  - os: osx
+#    osx_image: xcode8.3
+#    env:
+#    - compiler=clang
+#    - COMPILER_CC=clang
+#    - COMPILER_CXX=clang++
+#    - CONAN_SETTINGS_FLAG=""
+#    - CMAKE_GENERATOR_FLAG=""
+#    - ENABLE_COVERAGE=TRUE
+#    - ENABLE_TESTS=TRUE
+#    - BUILD_CONFIG=Release
+
+  - os: osx
+    osx_image: xcode9.4
+    env:
+    - compiler=clang
+    - COMPILER_CC=clang
+    - COMPILER_CXX=clang++
+    - CONAN_SETTINGS_FLAG=""
+    - CMAKE_GENERATOR_FLAG=""
+    - ENABLE_COVERAGE=TRUE
+    - ENABLE_TESTS=TRUE
+    - BUILD_CONFIG=Release
+
+  - os: osx
+    osx_image: xcode10
+    env:
+    - compiler=clang
+    - COMPILER_CC=clang
+    - COMPILER_CXX=clang++
+    - CONAN_SETTINGS_FLAG=""
+    - CMAKE_GENERATOR_FLAG=""
+    - ENABLE_COVERAGE=TRUE
+    - ENABLE_TESTS=TRUE
+    - BUILD_CONFIG=Release
+
+  - os: linux
+    compiler: gcc
+    env:
+    - COMPILER=g++-5
+    - COMPILER_CC=gcc-5
+    - COMPILER_CXX=g++-5
+    - CONAN_SETTINGS_FLAG=""
+    - CMAKE_GENERATOR_FLAG=""
+    - ENABLE_COVERAGE=TRUE
+    - ENABLE_TESTS=TRUE
+    - BUILD_CONFIG=Release
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: ['gcc-5', 'g++-5' ]
+
+  - os: linux
+    compiler: gcc
+    env:
+    - COMPILER=g++-6
+    - COMPILER_CC=gcc-6
+    - COMPILER_CXX=g++-6
+    - CONAN_SETTINGS_FLAG=""
+    - CMAKE_GENERATOR_FLAG=""
+    - ENABLE_COVERAGE=TRUE
+    - ENABLE_TESTS=TRUE
+    - BUILD_CONFIG=Release
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: ['gcc-6', 'g++-6' ]
+
+  - os: linux
+    compiler: gcc
+    env:
+    - COMPILER=g++-7
+    - COMPILER_CC=gcc-7
+    - COMPILER_CXX=g++-7
+    - CONAN_SETTINGS_FLAG=""
+    - CMAKE_GENERATOR_FLAG=""
+    - ENABLE_COVERAGE=TRUE
+    - UPLOAD_TO_CODECOV=TRUE
+    - ENABLE_TESTS=TRUE
+    - BUILD_CONFIG=Release
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: ['gcc-7', 'g++-7' ]
+
+
+  - os: linux
+    compiler: clang
+    env:
+    - COMPILER=clang++-5.0
+    - COMPILER_CC=clang-5.0
+    - COMPILER_CXX=clang++-5.0
+    - CONAN_SETTINGS_FLAG=""
+    - CMAKE_GENERATOR_FLAG=""
+    - ENABLE_COVERAGE=TRUE
+    - ENABLE_TESTS=TRUE
+    - BUILD_CONFIG=Release
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-5.0']
+        packages: ['clang-5.0' ]
+
+  - os: linux
+    compiler: clang
+    env:
+    - COMPILER=clang++-5.0
+    - COMPILER_CC=clang-5.0
+    - COMPILER_CXX=clang++-5.0
+    - CONAN_SETTINGS_FLAG=""
+    - CMAKE_GENERATOR_FLAG=""
+    - ENABLE_COVERAGE=TRUE
+    - ENABLE_TESTS=TRUE
+    - BUILD_CONFIG=Release
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-5.0']
+        packages: ['clang-5.0' ]
+
+  - os: linux
+    compiler: clang
+    env:
+    - COMPILER=clang++-6.0
+    - COMPILER_CC=clang-6.0
+    - COMPILER_CXX=clang++-6.0
+    - CONAN_SETTINGS_FLAG=""
+    - CMAKE_GENERATOR_FLAG=""
+    - ENABLE_COVERAGE=TRUE
+    - ENABLE_TESTS=TRUE
+    - BUILD_CONFIG=Release
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-6.0']
+        packages: ['clang-6.0' ]
+
+  - os: windows
+    env:
+    - CONAN_SETTINGS_FLAG="-s compiler=\"Visual Studio\" -s compiler.version=15 -s arch=x86_64 "
+    - CMAKE_GENERATOR_FLAG="-G \"Visual Studio 15 2017 Win64\" "
+    - ENABLE_COVERAGE=FALSE
+    - ENABLE_TESTS=TRUE
+    - BUILD_CONFIG=Release
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: ['gcc-7', 'g++-7' ]
+
+
+# The pre-install script. On windows it will install conan via chocolatey
+install:
+  - echo "Install script"
+
+
+script:
+  - env
+  - export CTEST_OUTPUT_ON_FAILURE=1
+  - if [ -f conanfile.txt ]; then export USE_CONAN=TRUE; fi
+
+  # The path to conan does not get set properly because travis does not restart the shell
+  # so we have to manually add the path it on Windows.
+  #- if [[ "${USE_CONAN}" == "TRUE" ]]; then conan user; fi
+#  - if [[ "${USE_CONAN}" == "TRUE" ]]; then conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan; fi
+
+  - if [[ "${COMPILER_CXX}" != "" ]]; then export CXX=${COMPILER_CXX}; fi
+  - if [[ "${COMPILER_CC}" != "" ]]; then export CC=${COMPILER_CC}; fi
+
+  - mkdir build && cd build
+#  - if [[ "${USE_CONAN}" == "TRUE" ]]; then eval conan install .. --build  ${CONAN_SETTINGS_FLAG}; fi
+
+  - eval cmake .. ${CMAKE_GENERATOR_FLAG} -DGNL_ENABLE_COVERAGE:BOOL=${ENABLE_COVERAGE:-FALSE} -DGNL_BUILD_TESTS:BOOL=${ENABLE_TESTS:-TRUE}
+  #- eval cmake .. ${CMAKE_GENERATOR_FLAG} ${COVERAGE_FLAGS} ${TEST_FLAGS}
+  - eval cmake --build . --config "${BUILD_CONFIG}"
+  - if [[ "${ENABLE_TESTS}" == "TRUE" ]]; then ctest -C ${BUILD_CONFIG}; fi
+
+after_success:
+  - if [[ "${UPLOAD_TO_CODECOV}" == "TRUE" ]]; then bash <(curl -s "https://codecov.io/bash"); fi
