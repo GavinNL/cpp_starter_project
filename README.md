@@ -6,7 +6,8 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/m76546ncm22ch1gc/branch/master?svg=true)](https://ci.appveyor.com/project/GavinNL/cpp-starter-project/branch/master)
 
-A C++ Starter project using the Conan Package manager for dependencies.
+A C++ Starter project using the Conan Package manager for dependencies. 
+Some settings were taken from https://github.com/lefticus/cpp_starter_project
 
 ```bash
 
