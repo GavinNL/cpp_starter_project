@@ -3,7 +3,7 @@ stages:
 - test
 
 
-cppcheck:
+.cppcheck:
   image: ubuntu:bionic
   stage: analysis
   before_script:
@@ -43,13 +43,13 @@ cppcheck:
 
 
 
-build-gcc5:
-    extends: .build-gcc
-    image: conanio/gcc5
+#build-gcc5:
+#    extends: .build-gcc
+#    image: conanio/gcc5
 
-build-gcc6:
-    extends: .build-gcc
-    image: conanio/gcc6
+#build-gcc6:
+#    extends: .build-gcc
+#    image: conanio/gcc6
 
 build-gcc7:
     extends: .build-gcc
@@ -71,7 +71,7 @@ build-gcc8:
       - mkdir -p build && cd build
       #- conan install --build missing ..
       - if [ -f ../conanfile.txt ]; then conan install .. --build missing -s compiler.libcxx=libstdc++11; fi
-      - cmake -D GNL_ENABLE_COVERAGE:BOOL=TRUE -D GNL_BUILD_TESTS:BOOL=TRUE ..
+      - cmake ..
       - cmake --build .
       - ctest
 
@@ -79,17 +79,17 @@ build-gcc8:
 #    extends: .build-clang
 #    image: conanio/clang38
 
-build-clang39:
-    extends: .build-clang
-    image: conanio/clang39
+#build-clang39:
+#    extends: .build-clang
+#    image: conanio/clang39
 
-build-clang40:
-    extends: .build-clang
-    image: conanio/clang40
+$build-clang40:
+$    extends: .build-clang
+$    image: conanio/clang40
 
-build-clang50:
-    extends: .build-clang
-    image: conanio/clang50
+$build-clang50:
+$    extends: .build-clang
+$    image: conanio/clang50
 
 build-clang60:
     extends: .build-clang
