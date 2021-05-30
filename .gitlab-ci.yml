@@ -2,24 +2,6 @@ stages:
 - analysis
 - test
 
-
-.cppcheck:
-  image: ubuntu:bionic
-  stage: analysis
-  before_script:
-    - apt update
-    - apt install -y --no-install-recommends cppcheck=1.82-1 python3-pygments python-pygments
-    - cppcheck --version
-  script:
-    - mkdir cppcheck
-    #- cppcheck . -I include/ --verbose --enable=all --inconclusive --language=c++ --error-exitcode=1
-    - cppcheck . -I include/ --enable=all --inconclusive --xml-version=2 --force --library=windows,posix,gnu . 2> cppcheck/result.xml
-    - cppcheck-htmlreport --source-encoding="iso8859-1" --title="my project name" --source-dir . --report-dir=cppcheck --file=cppcheck/result.xml
-  artifacts:
-    paths:
-      - cppcheck/
-    expire_in: 1 week
-
 .build-ubuntu-lts:
     image: conanio/conangcc8
     stage: test
@@ -29,13 +11,14 @@ stages:
       - pip3 install --user gcovr
       - export PATH=$HOME/.local/bin:$PATH
       - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-
+      - env
     script:
       - mkdir -p build && cd build
-      - if [ -f ../conanfile.txt ]; then conan profile new autodetect --detect --force ; fi
-      - if [ -f ../conanfile.txt ]; then conan install -pr autodetect .. --build missing -s compiler.libcxx=libstdc++11 ; fi
 
-      - cmake ..
+      - if [ -f ../conanfile.txt ]; then conan profile new autodetect --detect --force ; fi
+      - if [ -f ../conanfile.txt ]; then conan install -pr autodetect .. --build missing ${ADDITIONAL_CONAN_FLAGS} ; fi
+
+      - cmake .. ${ADDITIONAL_CMAKE_FLAGS}
       - cmake --build .
       - ctest
       - make coverage
@@ -59,6 +42,8 @@ build-bionic-gcc7:
     variables:
         CC: '/usr/bin/gcc-7'
         CXX: '/usr/bin/g++-7'
+        ADDITIONAL_CMAKE_FLAGS: ''
+        ADDITIONAL_CONAN_FLAGS: '-s compiler.libcxx=libstdc++11'
 
 build-focal-gcc8:
     extends: .build-ubuntu-lts
@@ -66,20 +51,26 @@ build-focal-gcc8:
     variables:
         CC: '/usr/bin/gcc-8'
         CXX: '/usr/bin/g++-8'
+        ADDITIONAL_CMAKE_FLAGS: ''
+        ADDITIONAL_CONAN_FLAGS: '-s compiler.libcxx=libstdc++11'
 
 build-focal-gcc9:
     extends: .build-ubuntu-lts
-    image: conanio/gcc8
+    image: conanio/gcc10
     variables:
         CC: '/usr/bin/gcc-9'
         CXX: '/usr/bin/g++-9'
         ADDITIONAL_PACKAGES: 'gcc-9 g++-9'
+        ADDITIONAL_CMAKE_FLAGS: ''
+        ADDITIONAL_CONAN_FLAGS: '-s compiler.libcxx=libstdc++11'
 
 build-focal-clang10:
     extends: .build-ubuntu-lts
     image: conanio/gcc10
     variables:
-        ADDITIONAL_PACKAGES: 'clang-10'
         CC: '/usr/bin/clang-10'
         CXX: '/usr/bin/clang++-10'
+        ADDITIONAL_PACKAGES: 'clang-10'
+        ADDITIONAL_CMAKE_FLAGS: ''
+        ADDITIONAL_CONAN_FLAGS: '-s compiler.libcxx=libstdc++11'
 
