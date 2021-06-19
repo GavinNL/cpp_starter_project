@@ -18,7 +18,7 @@ stages:
       - if [ -f ../conanfile.txt ]; then conan profile new autodetect --detect --force ; fi
       - if [ -f ../conanfile.txt ]; then conan install -pr autodetect .. --build missing ${ADDITIONAL_CONAN_FLAGS} ; fi
 
-      - cmake .. ${ADDITIONAL_CMAKE_FLAGS}
+      - cmake .. ${ADDITIONAL_CMAKE_FLAGS} -DCMAKE_MODULE_PATH=$PWD
       - cmake --build .
       - ctest --output-on-failure
       - make coverage
