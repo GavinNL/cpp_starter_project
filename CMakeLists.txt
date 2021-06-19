@@ -9,6 +9,10 @@ get_directory_property( _is_sub_project PARENT_DIRECTORY)
 
 if(_is_sub_project)
 else()
+    option( ${PROJECT_NAME}_ENABLE_COVERAGE "Enable Coverage."       OFF)
+    option( ${PROJECT_NAME}_ENABLE_WARNINGS "Enable Strict Warnings" ON)
+    option( ${PROJECT_NAME}_ENABLE_TESTING  "Enable Unit Tests"      ON)
+
     #########################################################
     include(cmake/StandardProjectSettings.cmake)
     include(cmake/CompilerWarnings.cmake)
@@ -27,6 +31,7 @@ else()
                                .gitlab-ci.yml
                               # .travis.yml
                                appveyor.yml
+                               conanfile.txt
                                cmake/CompilerWarnings.cmake
                                cmake/Coverage.cmake
                                cmake/StandardProjectSettings.cmake
@@ -53,11 +58,12 @@ target_compile_features( ${lib_name}
                             INTERFACE
                                 cxx_std_17
                                 )
-        target_include_directories( ${lib_name}
-                                        INTERFACE
-                                    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-                                    "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated_headers>"
-                           )
+
+target_include_directories( ${lib_name}
+                                INTERFACE
+                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated_headers>"
+                   )
 
 if( ${PROJECT_NAME}_ENABLE_COVERAGE )
    set_coverage_flags(${lib_name})
