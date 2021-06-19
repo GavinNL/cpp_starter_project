@@ -5,3 +5,4 @@ catch2/2.13.6
 cmake
 cmake_paths
 cmake_find_package
+cmake_find_package_multi
