@@ -34,7 +34,7 @@ build-bionic-gcc7:
     variables:
         CC: '/usr/bin/gcc-7'
         CXX: '/usr/bin/g++-7'
-        ADDITIONAL_CMAKE_FLAGS: ''
+        ADDITIONAL_CMAKE_FLAGS: ' -DABC_ENABLE_COVERAGE:BOOL=ON '
         ADDITIONAL_CONAN_FLAGS: '-s compiler.libcxx=libstdc++11'
 
 build-focal-gcc8:
